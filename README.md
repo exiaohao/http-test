@@ -1,5 +1,16 @@
 # HTTP Test
 
+## How to use
+
+image `reg.qiniu.com/hao/http-test:latest`
+
+```yaml
+
+```
+
+## Version
+To test different versions, set env `VERSION` and GET `/version` will show your version.
+
 ## Status codes
 `GET` `/status/{StatusCode}` Return status code
 

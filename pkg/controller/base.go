@@ -34,6 +34,7 @@ func Status(c *gin.Context) {
 		"statusCode": statusCode,
 		"statusText": http.StatusText(statusCode),
 		"serverName": utils.Hostname(),
+		"version":    utils.Version(),
 	})
 }
 
@@ -57,18 +58,15 @@ func RandResult(c *gin.Context) {
 		"statusCode": statusCode,
 		"statusText": http.StatusText(statusCode),
 		"serverName": utils.Hostname(),
+		"version":    utils.Version(),
 	})
 }
 
 // Version diy your version
 func Version(c *gin.Context) {
-	userVersion := os.Getenv("VERSION")
-	if userVersion == "" {
-		userVersion = "v1.0/default-version"
-	}
 	c.JSON(http.StatusOK, gin.H{
 		"statusCode": http.StatusOK,
-		"version":    userVersion,
+		"version":    utils.Version(),
 		"serverName": utils.Hostname(),
 	})
 }
@@ -92,5 +90,6 @@ func GetHandler(c *gin.Context) {
 		"origin":     c.Request.RemoteAddr,
 		"statusCode": http.StatusOK,
 		"serverName": utils.Hostname(),
+		"version":    utils.Version(),
 	})
 }

@@ -1,11 +1,14 @@
 package main
 
 import (
+	"os"
+
 	"github.com/exiaohao/http-test/pkg/controller"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	runPort := os.Getenv("HTTP_PORT")
 	router := gin.Default()
 
 	router.GET("/status", controller.Status)
@@ -19,5 +22,8 @@ func main() {
 
 	router.GET("/get", controller.GetHandler)
 
-	router.Run(":3000")
+	if runPort == "" {
+		runPort = "3000"
+	}
+	router.Run(":" + runPort)
 }
