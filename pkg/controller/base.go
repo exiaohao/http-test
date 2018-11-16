@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -8,6 +11,7 @@ import (
 
 	"github.com/exiaohao/http-test/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/satori/go.uuid"
 )
 
 var randStatuses = []int{
@@ -19,6 +23,14 @@ var randStatuses = []int{
 	http.StatusFound,
 	http.StatusNotFound,
 	http.StatusTeapot,
+}
+
+// ApiDemoReturn
+type ApiDemoReturn struct {
+	Data       string `json:"data"`
+	StatusCode int    `json:"statusCode"`
+	ServerName string `json:"serverName"`
+	Version    string `json:"version"`
 }
 
 // Status return httpStatus what you want
@@ -40,19 +52,7 @@ func Status(c *gin.Context) {
 
 // RandResult returns random result
 func RandResult(c *gin.Context) {
-	var errRate, statusCode int
-	errRateString := os.Getenv("ERR_RATE")
-	if errRateString == "" {
-		errRate = 50
-	} else {
-		errRate, _ = strconv.Atoi(errRateString)
-	}
-
-	if rand.Intn(100) < errRate {
-		statusCode = http.StatusInternalServerError
-	} else {
-		statusCode = http.StatusOK
-	}
+	_, statusCode := utils.RandomHTTPStatus()
 
 	c.JSON(statusCode, gin.H{
 		"statusCode": statusCode,
@@ -88,6 +88,75 @@ func GetHandler(c *gin.Context) {
 		"args":       getRequest,
 		"headers":    getHeaders,
 		"origin":     c.Request.RemoteAddr,
+		"statusCode": http.StatusOK,
+		"serverName": utils.Hostname(),
+		"version":    utils.Version(),
+	})
+}
+
+// ApiDemo a api demo
+func ApiDemo(c *gin.Context) {
+	_, statusCode := utils.RandomHTTPStatus()
+
+	randData := uuid.Must(uuid.NewV4())
+	c.JSON(statusCode, gin.H{
+		"data":       randData,
+		"statusCode": http.StatusOK,
+		"serverName": utils.Hostname(),
+		"version":    utils.Version(),
+	})
+}
+
+// CrossServiceCall
+func CrossServiceCall(c *gin.Context) {
+	requestUrl := os.Getenv("TARGET_SERVICE") + "/api/demo"
+	resp, err := http.Get(requestUrl)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"err":        fmt.Sprintf("Request backend %s failed, because: %s", requestUrl, err),
+			"statusCode": http.StatusInternalServerError,
+			"serverName": utils.Hostname(),
+			"version":    utils.Version(),
+		})
+		return
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"err":        fmt.Sprintf("Read body failed, because: %s", err),
+			"statusCode": http.StatusInternalServerError,
+			"serverName": utils.Hostname(),
+			"version":    utils.Version(),
+		})
+		return
+	}
+
+	returnBodyJson := ApiDemoReturn{}
+	err = json.Unmarshal(body, &returnBodyJson)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"data":       nil,
+			"rawData":    string(body),
+			"err":        fmt.Sprintf("Parse json failed, because: %s", err),
+			"statusCode": http.StatusInternalServerError,
+			"serverName": utils.Hostname(),
+			"version":    utils.Version(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"data":       returnBodyJson.Data,
+			"statusCode": returnBodyJson.StatusCode,
+			"serverName": returnBodyJson.ServerName,
+			"version":    returnBodyJson.Version,
+		},
+		"err":        nil,
 		"statusCode": http.StatusOK,
 		"serverName": utils.Hostname(),
 		"version":    utils.Version(),

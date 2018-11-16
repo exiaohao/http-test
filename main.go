@@ -22,6 +22,9 @@ func main() {
 
 	router.GET("/get", controller.GetHandler)
 
+	router.GET("/api/demo", controller.ApiDemo)
+	router.GET("/api/crossservicecall", controller.CrossServiceCall)
+
 	if runPort == "" {
 		runPort = "3000"
 	}

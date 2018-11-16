@@ -22,4 +22,9 @@ To test outlier detection, which is supported by istio, `/rand_status` will rand
 SET `env` `ERR_RATE` [0, 100]
 
 `GET` `/rand_status`
+`GET` `/api/demo`
 
+## Call api
+From ***http-test 1*** to ***http-test 2*** simulate that in-cluster calling.
+
+SET `env` `TARGET_SERVICE` to define another http-test service, and call `/api/demo` for test.
