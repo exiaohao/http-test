@@ -5,7 +5,32 @@
 image `reg.qiniu.com/hao/http-test:latest`
 
 ```yaml
-
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: http-test-v1
+  namespace: songhao
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: http-test
+        version: v1
+    spec:
+      containers:
+      - name: http-test
+        image: reg.qiniu.com/hao/http-test:latest
+        imagePullPolicy: Always
+        env:
+        - name: ERR_RATE
+          value: "10"
+        - name: GIN_MODE
+          value: "release"
+        - name: VERSION
+          value: "v1"
+        ports:
+        - containerPort: 3000
 ```
 
 ## Version
