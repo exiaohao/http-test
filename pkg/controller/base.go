@@ -113,7 +113,8 @@ func CrossServiceCall(c *gin.Context) {
 	resp, err := http.Get(requestUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
+			"data": nil,
+			// "targetHttpStatus": resp.StatusCode,
 			"err":        fmt.Sprintf("Request backend %s failed, because: %s", requestUrl, err),
 			"statusCode": http.StatusInternalServerError,
 			"serverName": utils.Hostname(),
@@ -126,11 +127,12 @@ func CrossServiceCall(c *gin.Context) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"err":        fmt.Sprintf("Read body failed, because: %s", err),
-			"statusCode": http.StatusInternalServerError,
-			"serverName": utils.Hostname(),
-			"version":    utils.Version(),
+			"data":             nil,
+			"targetHttpStatus": resp.StatusCode,
+			"err":              fmt.Sprintf("Read body failed, because: %s", err),
+			"statusCode":       http.StatusInternalServerError,
+			"serverName":       utils.Hostname(),
+			"version":          utils.Version(),
 		})
 		return
 	}
@@ -139,12 +141,13 @@ func CrossServiceCall(c *gin.Context) {
 	err = json.Unmarshal(body, &returnBodyJson)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"data":       nil,
-			"rawData":    string(body),
-			"err":        fmt.Sprintf("Parse json failed, because: %s", err),
-			"statusCode": http.StatusInternalServerError,
-			"serverName": utils.Hostname(),
-			"version":    utils.Version(),
+			"data":             nil,
+			"rawData":          string(body),
+			"targetHttpStatus": resp.StatusCode,
+			"err":              fmt.Sprintf("Parse json failed, because: %s", err),
+			"statusCode":       http.StatusInternalServerError,
+			"serverName":       utils.Hostname(),
+			"version":          utils.Version(),
 		})
 		return
 	}
@@ -156,9 +159,10 @@ func CrossServiceCall(c *gin.Context) {
 			"serverName": returnBodyJson.ServerName,
 			"version":    returnBodyJson.Version,
 		},
-		"err":        nil,
-		"statusCode": http.StatusOK,
-		"serverName": utils.Hostname(),
-		"version":    utils.Version(),
+		"targetHttpStatus": resp.StatusCode,
+		"err":              nil,
+		"statusCode":       http.StatusOK,
+		"serverName":       utils.Hostname(),
+		"version":          utils.Version(),
 	})
 }
