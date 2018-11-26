@@ -33,6 +33,15 @@ type ApiDemoReturn struct {
 	Version    string `json:"version"`
 }
 
+// Welcome page
+func Welcome(c *gin.Context) {
+	c.HTML(http.StatusOK, "welcome.tmpl", gin.H{
+		"version":    utils.Version(),
+		"serverName": utils.Hostname(),
+		"xff":        c.Request.Header.Get("X-Forwarded-For"),
+	})
+}
+
 // Status return httpStatus what you want
 func Status(c *gin.Context) {
 	statusCode, _ := strconv.Atoi(c.Param("statusCode"))

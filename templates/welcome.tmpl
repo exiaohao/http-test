@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=EDGE,chrome=IE7">
+		<meta charset="UTF-8">
+		<title>HTTP TEST</title>
+	</head>
+	<body>
+	</body>
+	<h1>HTTP TEST</h1>
+
+	<p>
+		Client IP: {{.xff}} <br />
+		Version: {{.version}}<br />
+		ServerName: {{.serverName}}
+	</p>
+
+	<ul>
+		<li><a href="/get">/get</a></li>
+		<li><a href="/status">/status</a></li>
+		<li><a href="/status/404">/status/404</a></li>
+		<li><a href="/rand_status">/rand_status</a></li>
+		<li><a href="/version">/version</a></li>
+		<li><a href="/api/demo">/api/demo</a></li>
+	</ul>
+
+
+
+</html>
