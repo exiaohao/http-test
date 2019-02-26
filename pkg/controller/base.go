@@ -11,7 +11,7 @@ import (
 
 	"github.com/exiaohao/http-test/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 var randStatuses = []int{
@@ -35,10 +35,9 @@ type ApiDemoReturn struct {
 
 // Welcome page
 func Welcome(c *gin.Context) {
-	c.HTML(http.StatusOK, "welcome.tmpl", gin.H{
-		"version":    utils.Version(),
-		"serverName": utils.Hostname(),
-		"xff":        c.Request.Header.Get("X-Forwarded-For"),
+	c.JSON(http.StatusOK, gin.H{
+		"msg":     "hello",
+		"version": utils.Version(),
 	})
 }
 

@@ -11,8 +11,6 @@ func main() {
 	runPort := os.Getenv("HTTP_PORT")
 	router := gin.Default()
 
-	router.LoadHTMLGlob("templates/*")
-
 	router.GET("/", controller.Welcome)
 	router.GET("/status", controller.Status)
 	router.POST("/status", controller.Status)
