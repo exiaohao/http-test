@@ -11,7 +11,7 @@ import (
 
 	"github.com/exiaohao/http-test/utils"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 var randStatuses = []int{
@@ -106,9 +106,9 @@ func GetHandler(c *gin.Context) {
 func ApiDemo(c *gin.Context) {
 	_, statusCode := utils.RandomHTTPStatus()
 
-	randData := uuid.Must(uuid.NewV4())
+	randData := uuid.New()
 	c.JSON(statusCode, gin.H{
-		"data":       randData,
+		"data":       randData.String(),
 		"statusCode": http.StatusOK,
 		"serverName": utils.Hostname(),
 		"version":    utils.Version(),
